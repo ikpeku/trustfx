@@ -32,10 +32,10 @@ const StackComponent = () => {
           title: "editable"
         })}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Discover"
         component={CryptoList}
-      />
+      /> */}
     </Stack.Navigator>
   )
 }
@@ -43,7 +43,7 @@ const StackComponent = () => {
 const TapNavigtion = () => {
   return (
     <Tab.Navigator screenOptions={{
-      tabBarStyle: { paddingVertical: 7, height: 60 },
+      // tabBarStyle: { paddingVertical: 7, height: 60 },
       tabBarLabelStyle: { fontSize: 15 },
       tabBarActiveTintColor: "#350460"
     }}>
@@ -64,6 +64,7 @@ const TapNavigtion = () => {
         tabBarBadgeStyle: { color: "white", backgroundColor: "#350460" },
         headerTitle: "Flexible Plans",
         headerTitleAlign: "center",
+        headerShadowVisible: false,
         headerTitleStyle: {
           fontSize: 30,
           color: "#350460",
