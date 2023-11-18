@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "trustfx",
+    "slug": "trustfx",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon .png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/icon .png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f1821"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+      // "bundleIdentifier": "com.aloremmanuel.coinbasepro"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+      // "package": "com.aloremmanuel.coinbasepro"
+    },
+    "web": {
+      "favicon": "./assets/splash .png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
+    "extra": {
+      // "eas": {
+      //   "projectId": "ebd89abe-a072-4c5c-ab91-98e55154a7b1"
+      // }
+    }
+  }
+}
