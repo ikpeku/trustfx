@@ -128,41 +128,6 @@ const DepositScreen = ({ route }) => {
 
     if (amount.slice() !== "") {
 
-      // try {
-      //   const userRef = doc(db, "users", auth.currentUser.uid)
-      //   // const userTransRef = doc(db, "transactions", auth.currentUser.uid)
-      //   // navigation.navigate("Home")
-
-      //   const timeNow = Timestamp.now()
-
-      //   await updateDoc(userRef, {
-      //     Deposit: {
-      //       amount: amount,
-      //       status: true,
-      //       type: "deposit"
-
-      //     },
-      //     transactions: [...transaction, { type: "deposit", amount: amount, status: false, name: route.params?.id, time: timeNow, id: uuidv4() }]
-
-
-      //   })
-
-      // } catch (error) {
-      //   // console.log(error);
-      //   Alert.alert("Deposit status", "failed to verifiy token try again", [
-      //     {
-      //       text: "cancel",
-      //       onPress: () => setToken(""),
-      //     },
-      //     {
-      //       text: "ok",
-      //       onPress: () => setToken(""),
-      //     }
-      //   ])
-
-      // }
-
-      // setVericationStatus("Deposit verification pending")
       Alert.alert("Deposit status", "Deposit verification processing", [
         {
           text: "cancel",
@@ -213,7 +178,7 @@ const DepositScreen = ({ route }) => {
     setAccount(seleted[0].address)
   }, [])
 
-  // 350460
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
@@ -244,8 +209,6 @@ const DepositScreen = ({ route }) => {
           </View>
 
 
-
-
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 10 }}>
             <View style={{ alignItems: "center", justifyContent: "center", backgroundColor: "#fff", borderRadius: 8, padding: 8 }}>
               <QRCode
@@ -256,7 +219,6 @@ const DepositScreen = ({ route }) => {
               <Text style={{ textAlign: "center", }}>{account}</Text>
             </View>
           </View>
-
 
 
           <View style={{ paddingVertical: 25 }}>
@@ -305,6 +267,8 @@ const DepositScreen = ({ route }) => {
                 }}
               />
             </TouchableOpacity>
+
+
             <TouchableOpacity onPress={copyToClipboard}>
               <Ionicons
                 name="copy"
@@ -319,7 +283,11 @@ const DepositScreen = ({ route }) => {
                 }}
               />
             </TouchableOpacity>
+
+
           </View>
+
+
           {copiedText && <View>
             <Text style={{
               fontWeight: 'bold',
@@ -332,114 +300,6 @@ const DepositScreen = ({ route }) => {
           </View>}
 
 
-          {/* imput deposit amount */}
-          {/* <Text style={{
-            color: '#fff',
-            fontFamily: 'Nunito-Regular',
-            textAlign: 'center',
-            fontSize: 15,
-            fontWeight: 'bold',
-          }}>Enter Amount to generate deposit token</Text>
-
-          <View style={{ backgroundColor: "#fff", borderRadius: 10, padding: 10, marginBottom: 10 }}>
-            <TextInput value={amount} inputMode="decimal" keyboardType="decimal-pad" placeholderTextColor={!tokenStatue ? null : "red"} style={{ backgroundColor: "#fff", color: "#000", padding: 6 }} placeholder="Enter deposit amount" onChangeText={(text) => setAmount(text)} />
-            <TouchableOpacity>
-              <Button onPress={generteToken} title="generate token" />
-
-            </TouchableOpacity>
-          </View> */}
-
-
-          {/* generated token */}
-
-          {/* <TouchableOpacity onPress={copyToTokenClipboard}>
-            <Text style={{ color: "#fff", textAlign: "center", fontStyle: "italic" }}>{token}</Text>
-          </TouchableOpacity> */}
-
-
-          {/* copy token */}
-          {/* {copiedToken && <View>
-            <Text style={{
-              fontWeight: 'bold',
-              color: '#fff',
-              fontFamily: 'Nunito-Medium',
-              fontSize: 15,
-              textAlign: "center",
-              marginBottom: 8
-            }}>{copiedToken}</Text>
-          </View>} */}
-
-
-          {/* deposit exchange modal */}
-
-          {/* <View
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: 10,
-              padding: 15,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <View>
-              <FontAwesome5
-                name="wallet"
-                size={24}
-                color="#3376bc"
-                style={{ paddingRight: 10 }}
-              />
-            </View>
-            <View>
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  color: '#3376bc',
-                  fontFamily: 'Nunito-Medium',
-                  fontSize: 15,
-                }}
-              >
-                Deposit from exchange
-              </Text>
-              <Text
-                style={{
-                  color: '#000',
-                  fontFamily: 'Nunito-Regular',
-                  fontSize: 15,
-                }}
-              >
-                By direct transfer from your account
-              </Text>
-            </View>
-          </View> */}
-
-
-          {/* confirm deposit amount */}
-          {/* <Text style={{
-            color: '#fff',
-            fontFamily: 'Nunito-Regular',
-            textAlign: 'center',
-            fontSize: 15,
-            fontWeight: 'bold', marginTop: 30
-          }}>Enter token to verify deposit</Text> */}
-
-          {/* <View style={{ backgroundColor: "#fff", borderRadius: 10, padding: 10, marginBottom: 10 }}>
-            <TextInput editable={false} value={token} style={{ backgroundColor: "#fff", color: "#000" }} placeholder="copy/paste token to confirm deposit" />
-            <TouchableOpacity  >
-              <Button onPress={verfyDeposit} title="Verify deposit" />
-            </TouchableOpacity>
-          </View>
-          {vericationStatue && <View>
-            <Text style={{
-              fontWeight: 'bold',
-              color: '#fff',
-              fontFamily: 'Nunito-Medium',
-              fontSize: 15,
-              textAlign: "center",
-              marginBottom: 8
-            }}>{vericationStatue}</Text>
-          </View>} */}
-
-
           <Text style={{
             color: '#fff',
             fontFamily: 'Nunito-Regular',
@@ -449,6 +309,8 @@ const DepositScreen = ({ route }) => {
           }}>
             Upload transaction proof
           </Text>
+
+
           {/* pick passport */}
 
           <View style={{ marginTop: 10, paddingTop: 10, borderWidth: 1, borderBottomWidth: 0, marginTop: 4, borderColor: "gray" }}>
