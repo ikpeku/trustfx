@@ -138,7 +138,7 @@ const ProfileScreen = () => {
 
 
 
-  b
+  // b
   // upload image to cloud  
 
 

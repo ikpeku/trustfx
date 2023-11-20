@@ -1,7 +1,7 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { CryptoList, DepositScreen, Home, SettingScreen as Discover, WithdrawScreen } from '../sreens';
+import { CryptoList, DepositScreen, Home, SettingScreen as Discover, WithdrawScreen, SubsquireScreen } from '../sreens';
 import { FontAwesome, Fontisto, AntDesign } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
@@ -40,6 +40,61 @@ const StackComponent = () => {
   )
 }
 
+
+const StackPlanComponent = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: true }}>
+      <Stack.Screen
+        name="Home"
+        component={CryptoList}
+        options={{
+          headerTitle: "Flexible Plans",
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "#350460",
+            fontFamily: 'Nunito-Bold',
+            fontWeight: "bold"
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Subsquire"
+        // component={SubsquireScreen}
+        component={DepositScreen}
+        options={({ route }) => ({
+          title: `${route.params?.title}`,
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "#350460",
+            fontFamily: 'Nunito-Bold',
+            fontWeight: "bold"
+          },
+        })}
+      />
+      <Stack.Screen
+        name="Withdrawal"
+        component={WithdrawScreen}
+        options={({ route }) => ({
+          // title: `Withdraw ${route.params?.title}`
+          title: "editable"
+        })}
+      />
+      {/* <Stack.Screen
+        name="Discover"
+        component={CryptoList}
+      /> */}
+    </Stack.Navigator>
+  )
+}
+
+
+
+
+
+
 const TapNavigtion = () => {
   return (
     <Tab.Navigator screenOptions={{
@@ -54,7 +109,7 @@ const TapNavigtion = () => {
           <FontAwesome name="home" size={size} color={color} />
         ),
       }} />
-      <Tab.Screen name="Discover1" component={CryptoList} options={{
+      <Tab.Screen name="Discover1" component={StackPlanComponent} options={{
 
         tabBarLabel: 'Plans',
         tabBarIcon: ({ color, size }) => (
@@ -62,15 +117,7 @@ const TapNavigtion = () => {
         ),
         tabBarBadge: 5,
         tabBarBadgeStyle: { color: "white", backgroundColor: "#350460" },
-        headerTitle: "Flexible Plans",
-        headerTitleAlign: "center",
-        headerShadowVisible: false,
-        headerTitleStyle: {
-          fontSize: 30,
-          color: "#350460",
-          fontFamily: 'Nunito-Bold',
-          fontWeight: "bold"
-        },
+        headerShown: false
       }} />
 
       <Tab.Screen name="Markets" component={Discover} options={{

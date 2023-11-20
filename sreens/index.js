@@ -12,4 +12,5 @@ export { default as Admin } from "./Admin"
 export { default as User } from "./User"
 export { default as ChatList } from "./ChatsComponents/ChatList"
 export { default as Chat } from "./ChatsComponents/Chat"
+export { default as SubsquireScreen } from "./SubsquireScreen"
 

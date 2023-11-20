@@ -13,27 +13,6 @@ const CryptoList = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.cryptoContainer}>
 
-      {/* <View style={styles.inputContainer}>
-        <Ionicons name="search" size={20} color="#C6C6C6" />
-        <TextInput
-          style={styles.input}
-          onChangeText={(e) => setText(e)}
-          value={text}
-          placeholder="Search"
-        />
-      </View>
-
-      <View style={{ marginVertical: 10 }}>
-        {route.params?.deposit === undefined && <Text style={styles.title}>Choose Asset</Text>}
-        {route.params?.deposit && <Text style={styles.title}>Choose Asset to buy</Text>}
-        {route.params?.deposit === false && }
-      </View>
-
-      <View>
-        <Crypto textInput={text} navigation={navigation} discover={route.params?.deposit} />
-      </View> */}
-
-
       <Text style={styles.title}>Choose a plan that works best for your pocket.</Text>
 
       <View>
@@ -50,24 +29,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingBottom: 60,
   },
-
-  // input: {
-  //   width: "100%",
-  //   paddingHorizontal: 4,
-
-  // },
-
-  // inputContainer: {
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   borderWidth: 1,
-  //   paddingHorizontal: 4,
-  //   paddingVertical: 4,
-  //   marginVertical: 10,
-  //   borderColor: "#C6C6C6",
-  //   borderRadius: 10
-
-  // },
   title: {
     // fontFamily: "Nunito-Black",
     fontWeight: "400",

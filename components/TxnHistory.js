@@ -1,7 +1,7 @@
-import { doc, onSnapshot } from 'firebase/firestore'
+// import { doc, onSnapshot } from 'firebase/firestore'
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
-import { auth, db } from '../firebase/firebaseConfig'
+// import { auth, db } from '../firebase/firebaseConfig'
 import { FlashList } from "@shopify/flash-list";
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import moment from 'moment';

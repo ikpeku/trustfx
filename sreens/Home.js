@@ -8,8 +8,8 @@ const Home = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.homeContainer}>
-            {/* <Header navigation={navigation} />
-            <Coinsection /> */}
+            <Header navigation={navigation} />
+            {/* <Coinsection /> */}
 
             {/* <FlatList data={A}/> */}
 

@@ -1,12 +1,18 @@
-import React from 'react'
-import { Alert, View, Text, SafeAreaView, TouchableOpacity, Share, TextInput, Button } from 'react-native'
-import { FontAwesome5, Ionicons } from '@expo/vector-icons'
+import React, { useEffect, useState } from 'react'
+import { Alert, View, Text, SafeAreaView, TouchableOpacity, Share, TextInput, Button, Pressable, Image } from 'react-native'
+import { FontAwesome5, Ionicons, AntDesign } from '@expo/vector-icons'
 import * as Clipboard from 'expo-clipboard'
 import QRCode from 'react-native-qrcode-svg';
 import { ScrollView } from 'react-native-gesture-handler';
 import { uuidv4 } from '@firebase/util';
 import { doc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebaseConfig';
+
+import { RadioButton } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
+
+
+
 
 const DepositScreen = ({ route }) => {
   const [copiedText, setCopiedText] = React.useState('');
@@ -17,9 +23,45 @@ const DepositScreen = ({ route }) => {
   const [tokenStatue, setTokenStatus] = React.useState(false)
   const [transaction, setTransction] = React.useState([])
 
+  const [address, setAddress] = useState("BTC")
+  const [showToken, setShowToken] = useState(false)
+  const [account, setAccount] = useState("0x23fnmjjjsdksdfjkkfjsjcfsm45")
+
+  // image picker
+  const [passport, setPassport] = useState(null);
+  const [passporteUrl, setPassporteUrl] = useState("")
+
+  const WalletData = [
+    {
+      id: 1,
+      account: "BTC",
+      address: "0x23fnmjjjsdksdfjkkfjsjcfsm45"
+    },
+    {
+      id: 2,
+      account: "ETH",
+      address: "0x23fnmjjjsdkrfdjkkfjsjcfsm45"
+    },
+    {
+      id: 3,
+      account: "USDT",
+      address: "0x23fnmjjjsdksdkkkkfjsjcfsm45"
+    },
+    {
+      id: 4,
+      account: "BNB",
+      address: "0x23fnmjjjsdkssdkkfjsjcfsm45"
+    },
+    {
+      id: 5,
+      account: "BUSD",
+      address: "0x23fnmjjjsdksd23fjkkfjsjcfsm45"
+    },
+  ]
+
 
   const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(route.params?.address)
+    await Clipboard.setStringAsync(account)
     fetchCopiedText()
   }
 
@@ -34,7 +76,7 @@ const DepositScreen = ({ route }) => {
   };
 
   const copyToTokenClipboard = async () => {
-    await Clipboard.setStringAsync(token)
+    await Clipboard.setStringAsync(account)
     fetchCopiedToken()
   }
 
@@ -50,7 +92,7 @@ const DepositScreen = ({ route }) => {
   const onShare = async () => {
     try {
       const result = await Share.share({
-        message: `${route.params?.address}`,
+        message: `${account}`,
       })
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -86,39 +128,39 @@ const DepositScreen = ({ route }) => {
 
     if (amount.slice() !== "") {
 
-      try {
-        const userRef = doc(db, "users", auth.currentUser.uid)
-        // const userTransRef = doc(db, "transactions", auth.currentUser.uid)
-        // navigation.navigate("Home")
+      // try {
+      //   const userRef = doc(db, "users", auth.currentUser.uid)
+      //   // const userTransRef = doc(db, "transactions", auth.currentUser.uid)
+      //   // navigation.navigate("Home")
 
-        const timeNow = Timestamp.now()
+      //   const timeNow = Timestamp.now()
 
-        await updateDoc(userRef, {
-          Deposit: {
-            amount: amount,
-            status: true,
-            type: "deposit"
+      //   await updateDoc(userRef, {
+      //     Deposit: {
+      //       amount: amount,
+      //       status: true,
+      //       type: "deposit"
 
-          },
-          transactions: [...transaction, { type: "deposit", amount: amount, status: false, name: route.params?.id, time: timeNow, id: uuidv4() }]
+      //     },
+      //     transactions: [...transaction, { type: "deposit", amount: amount, status: false, name: route.params?.id, time: timeNow, id: uuidv4() }]
 
 
-        })
+      //   })
 
-      } catch (error) {
-        console.log(error);
-        Alert.alert("Deposit status", "failed to verifiy token try again", [
-          {
-            text: "cancel",
-            onPress: () => setToken(""),
-          },
-          {
-            text: "ok",
-            onPress: () => setToken(""),
-          }
-        ])
+      // } catch (error) {
+      //   // console.log(error);
+      //   Alert.alert("Deposit status", "failed to verifiy token try again", [
+      //     {
+      //       text: "cancel",
+      //       onPress: () => setToken(""),
+      //     },
+      //     {
+      //       text: "ok",
+      //       onPress: () => setToken(""),
+      //     }
+      //   ])
 
-      }
+      // }
 
       // setVericationStatus("Deposit verification pending")
       Alert.alert("Deposit status", "Deposit verification processing", [
@@ -143,26 +185,65 @@ const DepositScreen = ({ route }) => {
 
   }
 
-  React.useEffect(() => {
-    const refDoc = doc(db, "users", auth.currentUser.uid)
+
+  const pickPassport = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      canceled: true
+    });
 
 
-    const unsub = onSnapshot(refDoc, (snapshot) => {
-      if (snapshot.exists()) {
-        const { transactions } = snapshot?.data()
-        setTransction(transactions)
+    if (!result.canceled) {
+      setPassport(result.assets[0].uri);
+    }
+  };
 
-      }
-    })
-    return () => unsub()
+  const handleImagesSubmit = () => {
 
+  }
+
+
+
+  useEffect(() => {
+    const seleted = WalletData.filter(v => v.account === address)
+    setAccount(seleted[0].address)
   }, [])
 
+  // 350460
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#3376bc' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
       <ScrollView>
         <View style={{ padding: 20, flex: 1 }}>
+
+
+          <View style={{ position: "relative" }}>
+            <Pressable onPress={() => setShowToken(V => !V)} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+              <Text style={{ fontSize: 20 }}>Choose a token <Text>({address})</Text></Text>
+              <AntDesign name={showToken ? "caretup" : "caretdown"} size={24} color="black" />
+            </Pressable>
+
+            {showToken && <View style={{ width: "70%", backgroundColor: "#fff", marginLeft: "auto", position: "absolute", zIndex: 50, top: 25, right: 10 }}>
+              <RadioButton.Group onValueChange={value => {
+                setAddress(value)
+                setShowToken(false)
+              }} value={address}>
+                {
+                  WalletData.map(walletInfo => {
+                    return (
+                      <RadioButton.Item label={walletInfo.account} key={walletInfo.id} value={walletInfo.account} />
+                    )
+                  })
+                }
+              </RadioButton.Group>
+            </View>}
+          </View>
+
+
 
 
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 10 }}>
@@ -170,9 +251,9 @@ const DepositScreen = ({ route }) => {
               <QRCode
                 size={200}
                 // logoSize={40}
-                value={route.params?.address}
+                value={account}
               />
-              <Text style={{ textAlign: "center", }}>{route.params?.address}</Text>
+              <Text style={{ textAlign: "center", }}>{account}</Text>
             </View>
           </View>
 
@@ -186,7 +267,7 @@ const DepositScreen = ({ route }) => {
                 textAlign: 'center',
               }}
             >
-              Send only {route.params?.title} ({route.params?.id}) to this
+              Send only {address} to this
               address.
             </Text>
             <Text
@@ -212,7 +293,7 @@ const DepositScreen = ({ route }) => {
               <Ionicons
                 name="ios-share"
                 size={24}
-                color="#3376bc"
+                color="#350460"
                 onPress={onShare}
                 style={{
                   backgroundColor: '#fff',
@@ -228,7 +309,7 @@ const DepositScreen = ({ route }) => {
               <Ionicons
                 name="copy"
                 size={24}
-                color="#3376bc"
+                color="#350460"
                 style={{
                   backgroundColor: '#fff',
                   borderRadius: 10,
@@ -252,7 +333,7 @@ const DepositScreen = ({ route }) => {
 
 
           {/* imput deposit amount */}
-          <Text style={{
+          {/* <Text style={{
             color: '#fff',
             fontFamily: 'Nunito-Regular',
             textAlign: 'center',
@@ -266,18 +347,18 @@ const DepositScreen = ({ route }) => {
               <Button onPress={generteToken} title="generate token" />
 
             </TouchableOpacity>
-          </View>
+          </View> */}
 
 
           {/* generated token */}
 
-          <TouchableOpacity onPress={copyToTokenClipboard}>
+          {/* <TouchableOpacity onPress={copyToTokenClipboard}>
             <Text style={{ color: "#fff", textAlign: "center", fontStyle: "italic" }}>{token}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
 
           {/* copy token */}
-          {copiedToken && <View>
+          {/* {copiedToken && <View>
             <Text style={{
               fontWeight: 'bold',
               color: '#fff',
@@ -286,24 +367,12 @@ const DepositScreen = ({ route }) => {
               textAlign: "center",
               marginBottom: 8
             }}>{copiedToken}</Text>
-          </View>}
-          {/* {  tokenStatue && <View>
-            <Text  style={{
-                fontWeight: 'bold',
-                color: '#fff',
-                fontFamily: 'Nunito-Medium',
-                fontSize: 15,
-                textAlign: "center",
-                marginBottom: 8
-              }}>{tokenStatue}</Text>
           </View>} */}
 
 
-
-
-
           {/* deposit exchange modal */}
-          <View
+
+          {/* <View
             style={{
               backgroundColor: '#fff',
               borderRadius: 10,
@@ -341,19 +410,19 @@ const DepositScreen = ({ route }) => {
                 By direct transfer from your account
               </Text>
             </View>
-          </View>
+          </View> */}
 
 
           {/* confirm deposit amount */}
-          <Text style={{
+          {/* <Text style={{
             color: '#fff',
             fontFamily: 'Nunito-Regular',
             textAlign: 'center',
             fontSize: 15,
             fontWeight: 'bold', marginTop: 30
-          }}>Enter token to verify deposit</Text>
+          }}>Enter token to verify deposit</Text> */}
 
-          <View style={{ backgroundColor: "#fff", borderRadius: 10, padding: 10, marginBottom: 10 }}>
+          {/* <View style={{ backgroundColor: "#fff", borderRadius: 10, padding: 10, marginBottom: 10 }}>
             <TextInput editable={false} value={token} style={{ backgroundColor: "#fff", color: "#000" }} placeholder="copy/paste token to confirm deposit" />
             <TouchableOpacity  >
               <Button onPress={verfyDeposit} title="Verify deposit" />
@@ -368,7 +437,36 @@ const DepositScreen = ({ route }) => {
               textAlign: "center",
               marginBottom: 8
             }}>{vericationStatue}</Text>
-          </View>}
+          </View>} */}
+
+
+          <Text style={{
+            color: '#fff',
+            fontFamily: 'Nunito-Regular',
+            textAlign: 'center',
+            fontSize: 15,
+            fontWeight: 'bold',
+          }}>
+            Upload transaction proof
+          </Text>
+          {/* pick passport */}
+
+          <View style={{ marginTop: 10, paddingTop: 10, borderWidth: 1, borderBottomWidth: 0, marginTop: 4, borderColor: "gray" }}>
+            <Text style={{ fontSize: 20, fontFamily: "Nunito-Medium", color: "#fff", textAlign: "center", }}>Transaction Receipt</Text>
+          </View>
+
+          <TouchableOpacity onPress={pickPassport} style={{ borderColor: "gray", borderWidth: 1, borderTopWidth: 0, shadowColor: "gray", flexDirection: "row", alignItems: "center", justifyContent: "center", padding: 10 }}>
+            <Text style={{ paddingVertical: 6, paddingHorizontal: 15, borderRadius: 10, backgroundColor: "#e9e9e9", color: "#350460", fontSize: 15 }}>Choose File</Text>
+            <Text style={{ marginLeft: 10 }}>no file selected</Text>
+          </TouchableOpacity>
+
+
+          {passport && <Image source={{ uri: passport }} style={{ height: 200, margin: 5 }} />}
+
+
+          <TouchableOpacity disabled={!passport} onPress={handleImagesSubmit} style={{ backgroundColor: "#1a2036", padding: 15, marginVertical: 20 }}>
+            <Text style={{ fontSize: 20, fontFamily: "Nunito-Medium", color: "#fff", textAlign: "center" }}>Submit documents</Text>
+          </TouchableOpacity>
 
         </View>
       </ScrollView>
