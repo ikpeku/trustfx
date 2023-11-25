@@ -1,5 +1,6 @@
 // import React, { useEffect, useState } from 'react'
 
+import { useEffect, useState } from 'react'
 import {
   FlatList,
   SafeAreaView,
@@ -9,42 +10,18 @@ import {
   Image,
   View,
 } from 'react-native'
-// import { images } from '../constant/CoinIcon'
-import { Button } from 'react-native-paper'
+import { ActivityIndicator, Button } from 'react-native-paper'
 
 
 
 
-// const Item = ({ item, onPress, backgroundColor, textColor, imgUrl }) => (
 
-//   <TouchableOpacity
-//     onPress={onPress}
-//     style={[styles.item, { backgroundColor, borderRadius: 20, }]}
-//   >
-//     <View style={{ flexDirection: 'row', alignItems: "center", borderRadius: 10 }}>
-//       <View>
-//         <Image
-//           style={styles.coinlogo}
-//           source={{
-//             uri: imgUrl,
-//           }}
-//         />
-//       </View>
-
-//       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: "85%" }}>
-//         <Text style={[styles.title, { color: textColor, fontSize: 18, fontFamily: "Nunito-Black" }]}>{item.title}</Text>
-//         <Text
-//           style={[styles.title, { color: textColor, fontSize: 18, fontFamily: "Nunito-Black" }]}
-//         >{`${item?.amt?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ${item.id} `}</Text>
-//       </View>
-//     </View>
-//   </TouchableOpacity>
-// )
-
-const Plans = ({ navigation }) => {
+const Plans = ({ navigation, plans }) => {
 
 
-  const renderItem = () => {
+
+  const renderItem = (item) => {
+
     return (
       <View style={styles.card}>
         <View style={{ backgroundColor: "#350460", padding: 6, width: "20%", borderRadius: 20, marginVertical: 10, transform: [{ rotate: '-25deg' }], }}>
@@ -52,33 +29,48 @@ const Plans = ({ navigation }) => {
         </View>
 
         <View style={{ marginTop: 10, backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 15 }}>
-          <Text style={{ fontSize: 25, fontWeight: "bold", textAlign: "center" }}>Welcome plan</Text>
+          <Text style={{ fontSize: 25, fontWeight: "bold", textAlign: "center" }}>{item?.name}</Text>
         </View>
         <View style={{ backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 10 }}>
-          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>Welcome plan</Text>
+          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>{item?.description}</Text>
         </View>
         <View style={{ backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 10 }}>
-          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>Welcome plan</Text>
+          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>${item?.amount}</Text>
         </View>
         <View style={{ backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 10 }}>
-          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>Welcome plan</Text>
+          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>{item?.interestPercentage.toFixed(2)}%</Text>
         </View>
         <View style={{ backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 10 }}>
-          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>Welcome plan</Text>
+          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>{item?.duration} {item?.durationType}</Text>
         </View>
 
-        <Button onPress={() => navigation.navigate("Subsquire", { title: "subsquire" })} style={{ backgroundColor: "#350460", marginTop: 15 }} mode='contained'>Subsquire</Button>
+        <View style={{ backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 10 }}>
+          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>Interest:
+            <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}> ${item?.totalProfit.toFixed(3)}</Text>
+          </Text>
+        </View>
+
+        <View style={{ backgroundColor: "#fff", padding: 5, borderRadius: 5, borderColor: "#e0e0e0", marginBottom: 10, paddingVertical: 10 }}>
+          <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}>Total:
+            <Text style={{ fontSize: 17, fontWeight: "600", textAlign: "center" }}> ${item?.total.toFixed(3)}</Text>
+          </Text>
+        </View>
+
+        {item.subscribers[0].planStatus !== "active" &&
+          <Button onPress={() => navigation.navigate("Subsquire", { title: item.name, planId: item._id })} style={{ backgroundColor: "#350460", marginTop: 15, color: "#fff" }} mode='contained'>Subsquire</Button>
+        }
       </View>
     )
   }
 
 
 
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={Array(5)}
-        renderItem={renderItem}
+        data={plans}
+        renderItem={({ item }) => renderItem(item)}
         // keyExtractor={(item) => item.id}
         // extraData={selectedId}
         showsVerticalScrollIndicator={false}

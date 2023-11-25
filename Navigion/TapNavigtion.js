@@ -59,21 +59,7 @@ const StackPlanComponent = () => {
           },
         }}
       />
-      <Stack.Screen
-        name="Subsquire"
-        // component={SubsquireScreen}
-        component={DepositScreen}
-        options={({ route }) => ({
-          title: `${route.params?.title}`,
-          headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontSize: 30,
-            color: "#350460",
-            fontFamily: 'Nunito-Bold',
-            fontWeight: "bold"
-          },
-        })}
-      />
+
       <Stack.Screen
         name="Withdrawal"
         component={WithdrawScreen}

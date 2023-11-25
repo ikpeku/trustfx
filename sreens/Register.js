@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { FontAwesome, FontAwesome5, Entypo, AntDesign } from '@expo/vector-icons';
-// import DateTimePicker from '@react-native-community/datetimepicker';
-// import { CreateWithEmail } from '../firebase/firebaseConfig';
-import { Timestamp } from 'firebase/firestore';
+import { FontAwesome } from '@expo/vector-icons';
+import axios from 'axios';
+import { ActivityIndicator } from 'react-native-paper';
+import { ROOT_URL } from '../constant/URL';
+import useStore from '../store/store';
 
 const RegisterScreen = ({ navigation }) => {
+
+  const { handleLogin: setLogin } = useStore((state) => state)
+
   const [showPassword, setShowPassword] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -20,19 +24,51 @@ const RegisterScreen = ({ navigation }) => {
     error: false
   })
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+
 
 
   const handleRegisterUser = async () => {
-    setIsLoading(true)
+    setError("")
+    setIsLoading(v => !v)
+    if (!password && !email.email && !firstName && !lastName && !userName && !phoneNumber || email.error) return
 
-    if (!password && !email.email && !firstName && !lastName && !userName && !phoneNumber) {
-      Alert.alert("ALl field required")
+    try {
+      const response = await axios.post(`${ROOT_URL}/auth/register`, {
+        email: email.email,
+        password,
+        firstName,
+        lastName,
+        username: userName,
+        phone: phoneNumber,
+      })
+
+      // console.log(response.data)
+
+      const data = {
+        isLoggedin: response?.data?.status === "success" ? true : false,
+        userToken: response?.data?.token,
+        _id: response.data?.user?._id,
+        email: response?.data?.user?.email,
+        firstName: response?.data?.user?.firstName,
+        lastname: response?.data?.user?.lastname,
+        userName: response?.data?.user?.username,
+        phone: response?.data?.user?.phone,
+        role: response?.data?.user?.role,
+
+      }
+
+      await setLogin(data)
+
+    } catch (error) {
+      console.log(error)
+      setError(error.response.data.message)
+
     }
 
-
-    // await CreateWithEmail(email, password, fullName, date)
     setIsLoading(false)
   }
+
 
 
   const validate = (text) => {
@@ -52,20 +88,15 @@ const RegisterScreen = ({ navigation }) => {
   }
 
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size={'large'} color="#3376bc" />
-      </View>
-    )
-  }
-
-
   return (
     <SafeAreaView style={styles.logincontainer}>
+      {isLoading && <View style={{ position: "absolute", zIndex: 100, width: "100%", height: "100%", flex: 1, justifyContent: "center", alignItems: "center", }}>
+        <ActivityIndicator animating={true} size={100} color={"#000080"} />
+      </View>}
+
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        <View style={{ flex: 1, }}>
+        <View style={{ flex: 1 }}>
 
           <View style={{ flex: 1, alignItems: "center", justifyContent: "center", width: "100%", marginVertical: 20 }}>
             <Text style={{ fontSize: 30, fontWeight: "bold", fontFamily: "Nunito-Medium", color: "#350460", textAlign: "center" }}>Create New Account</Text>
@@ -113,7 +144,7 @@ const RegisterScreen = ({ navigation }) => {
                 <Text style={{ textAlign: "center", color: "#350460", fontSize: 20, fontWeight: "bold", fontFamily: "Nunito-Medium", }}>Create Account</Text>
               </TouchableOpacity>
 
-
+              {error && <Text style={{ color: "red" }}>{error}</Text>}
             </View>
           </View>
 

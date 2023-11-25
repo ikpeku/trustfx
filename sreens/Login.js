@@ -1,27 +1,67 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FontAwesome, } from '@expo/vector-icons';
+import { ActivityIndicator } from 'react-native-paper';
 
-import { SignWithEmail } from '../firebase/firebaseConfig';
+import axios from 'axios';
+import { ROOT_URL } from '../constant/URL';
+import useStore from '../store/store';
 
 
 
 const Login = ({ navigation }) => {
+  const { handleLogin: setLogin } = useStore((state) => state)
 
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState({
+    email: "",
+    error: false
+  })
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
+  const validate = (text) => {
+    setError("")
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+
+    if (reg.test(text) === false) {
+      setEmail({ email: text, error: true })
+      return false;
+    } else if (reg.test(text) === true) {
+      setEmail({ email: text, error: false })
+    }
+  }
 
 
   const handleLogin = async () => {
-    setIsLoading(true)
-    if (!password && !email) return
-    // await SignWithEmail(email, password)
-    // setIsLoading(false)
+    setError("")
+    setIsLoading(v => !v)
+    if (!password && !email.email || email.error) return
 
-    // setIsLoading(false)
+    try {
+      const response = await axios.post(`${ROOT_URL}/auth/login`, { email: email.email, password })
+
+      const data = {
+        isLoggedin: response?.data?.status === "success" ? true : false,
+        userToken: response?.data?.token,
+        _id: response.data?.user?._id,
+        email: response?.data?.user?.email,
+        firstName: response?.data?.user?.firstName,
+        lastname: response?.data?.user?.lastname,
+        userName: response?.data?.user?.username,
+        phone: response?.data?.user?.phone,
+        role: response?.data?.user?.role,
+
+      }
+
+      await setLogin(data)
+
+    } catch (error) {
+      setError(error.response.data.message)
+    }
+
+    setIsLoading(false)
   }
 
 
@@ -32,18 +72,14 @@ const Login = ({ navigation }) => {
     navigation.navigate("Register")
   }
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size={'large'} color="#350460" />
-      </View>
-    )
-  }
 
 
 
   return (
     <SafeAreaView style={styles.logincontainer}>
+      {isLoading && <View style={{ position: "absolute", flex: 1, justifyContent: "center", alignItems: "center", zIndex: 100 }}>
+        <ActivityIndicator animating={true} size={100} color={"#000080"} />
+      </View>}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ flex: 1 }}>
 
@@ -53,8 +89,9 @@ const Login = ({ navigation }) => {
           <View style={{ flex: 3, width: "100%", marginVertical: 50 }}>
             <View style={{ backgroundColor: "#350460", padding: 20, marginHorizontal: 20, borderRadius: 10 }}>
               <Text style={{ color: "#fff", fontSize: 20, fontWeight: "bold", fontFamily: "Nunito-Regular", }}>Email</Text>
-              <View style={{ backgroundColor: "#fff", borderRadius: 6, marginBottom: 10 }}>
-                <TextInput placeholder="example.com" style={{ width: "100%", padding: 4 }} autoCorrect inputMode="email" keyboardType="email-address" value={email} onChangeText={(text) => setEmail(text)} />
+              {/* <View style={{ backgroundColor: "#fff", borderRadius: 6, marginBottom: 10 }}> */}
+              <View style={[{ backgroundColor: "#fff", borderRadius: 6, marginBottom: 10 }, email.error ? { borderWidth: 2, borderColor: "#ff0000" } : {}]}>
+                <TextInput placeholder="example.com" style={{ width: "100%", padding: 4 }} autoCorrect inputMode="email" keyboardType="email-address" value={email.email} onChangeText={(text) => validate(text)} />
               </View>
               <Text style={{ color: "#fff", fontSize: 20, fontWeight: "bold", fontFamily: "Nunito-Regular", }}>Password</Text>
               <View style={{ backgroundColor: "#fff", borderRadius: 6, flexDirection: "row", alignItems: "center" }}>
@@ -68,6 +105,8 @@ const Login = ({ navigation }) => {
               <TouchableOpacity activeOpacity={0.6} style={{ marginVertical: 5, padding: 10, backgroundColor: "#fff", borderRadius: 5 }} onPress={handleLogin}>
                 <Text style={{ textAlign: "center", color: "#350460", fontSize: 20, fontWeight: "bold", fontFamily: "Nunito-Medium", }}>Log In</Text>
               </TouchableOpacity>
+
+              {error && <Text style={{ color: "red" }}>{error}</Text>}
 
             </View>
           </View>

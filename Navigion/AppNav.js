@@ -6,11 +6,13 @@ import AuthStack from './AuthStack'
 import { AuthContext } from '../context/AuthContext'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import useStore from '../store/store'
 
 SplashScreen.preventAutoHideAsync()
 
 const Component = () => {
-  const { isLoading, userToken } = useContext(AuthContext)
+  // const { isLoading, userToken } = useContext(AuthContext)
+  const { isLoggedin } = useStore((state) => state.initialData)
 
   const [fontsLoaded] = useFonts({
     'Nunito-Black': require('../fonts/Nunito-Black.ttf'),
@@ -43,16 +45,19 @@ const Component = () => {
   // }
 
 
+
+
   return (
     <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
 
-      {/* {userToken ? 
-        : */}
+      {
+        isLoggedin ?
+          <AppStack />
+          :
+          <AuthStack />
+      }
 
-      <AppStack />
 
-      {/* <AuthStack /> */}
-      {/* } */}
 
 
 
@@ -67,7 +72,7 @@ export default Component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  
+
     // alignItems: 'center',
     // justifyContent: 'center',
   },

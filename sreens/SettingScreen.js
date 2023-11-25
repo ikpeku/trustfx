@@ -1,6 +1,6 @@
-import { FlashList } from '@shopify/flash-list'
-import React, { useEffect, useState, useRef, useMemo} from 'react'
-import { View, Text, StyleSheet, ActivityIndicator} from 'react-native'
+// import { FlashList } from '@shopify/flash-list'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
+import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import ListItems from '../marketComponents/Listiems'
 import { getMarketData } from '../marketComponents/MarketData'
@@ -15,18 +15,18 @@ import {
 const ListHeader = () => (
   <>
     <View style={styles.titleWrapper}>
-        <Text style={styles.largeTitle}>Markets</Text>
-      </View>
+      <Text style={styles.largeTitle}>Markets</Text>
+    </View>
     <View style={styles.divider} />
   </>
 )
 
 
 
-const SettingScreen = () => { 
+const SettingScreen = () => {
   const [data, setData] = useState([])
   const [selectedCoinData, setSelectedCoinData] = useState(null);
- 
+
 
 
 
@@ -47,7 +47,7 @@ const SettingScreen = () => {
 
 
   useEffect(() => {
-  
+
 
     const fetchMarketData = async () => {
       const marketData = await getMarketData();
@@ -63,36 +63,36 @@ const SettingScreen = () => {
 
   return (
     <BottomSheetModalProvider>
-    <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
-    {data.length === 0 && <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-      <ActivityIndicator size={'large'}  color="#3376bc" />
-      </View>}
-      {data.length !== 0 &&<FlashList
-      estimatedItemSize={10}
-        keyExtractor={(item) => item.id}
-        data={data}
-        renderItem={({ item }) => (
-          <ListItems
-            name={item.name}
-            symbol={item.symbol}
-            currentPrice={item.current_price}
-            priceChangePercentage7d={item.price_change_percentage_7d_in_currency}
-            logoUrl={item.image}
-            onPress={() => openModal(item)}
-          />
-        )}
-        ListHeaderComponent={<ListHeader />}
-      />}
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', }}>
+        {data.length === 0 && <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size={'large'} color="#3376bc" />
+        </View>}
+        {data.length !== 0 && <FlatList
+          estimatedItemSize={10}
+          keyExtractor={(item) => item.id}
+          data={data}
+          renderItem={({ item }) => (
+            <ListItems
+              name={item.name}
+              symbol={item.symbol}
+              currentPrice={item.current_price}
+              priceChangePercentage7d={item.price_change_percentage_7d_in_currency}
+              logoUrl={item.image}
+              onPress={() => openModal(item)}
+            />
+          )}
+          ListHeaderComponent={<ListHeader />}
+        />}
       </SafeAreaView>
 
 
       <BottomSheetModal
-          ref={bottomSheetModalRef}
-          index={0}
-          snapPoints={snapPoints}
-          style={styles.bottomSheet}
-        >
-          { selectedCoinData ? (
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        style={styles.bottomSheet}
+      >
+        {selectedCoinData ? (
           <Chart
             currentPrice={selectedCoinData.current_price}
             logoUrl={selectedCoinData.image}
@@ -102,9 +102,9 @@ const SettingScreen = () => {
             sparkline={selectedCoinData?.sparkline_in_7d.price}
           />
         ) : null}
-        </BottomSheetModal>
+      </BottomSheetModal>
 
-      </BottomSheetModalProvider>
+    </BottomSheetModalProvider>
   )
 }
 
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#3376bc",
     fontFamily: 'Nunito-Bold',
-            // fontWeight: "bold",
+    // fontWeight: "bold",
   },
   divider: {
     height: StyleSheet.hairlineWidth,

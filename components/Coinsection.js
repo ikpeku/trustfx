@@ -3,12 +3,12 @@ import { View, Text, StyleSheet } from 'react-native'
 import CoinNav from './CoinNav'
 import TxnHistory from './TxnHistory'
 
-const Coinsection = () => {
+const Coinsection = ({ navigation }) => {
   return (
     <View style={styles.coinContainer}>
 
       <CoinNav />
-      <TxnHistory />
+      <TxnHistory navigation={navigation} />
     </View>
   )
 }

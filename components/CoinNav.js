@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet } from 'react-native'
+import { Text } from 'react-native-paper'
 
 const CoinNav = () => {
   return (
@@ -13,10 +14,12 @@ export default CoinNav
 
 const styles = StyleSheet.create({
   txnContainer: {
-    backgroundColor: '#3376bc',
+    backgroundColor: '#350460',
     // alignItems: 'center',
     // justifyContent: 'center',
     paddingTop: 10,
+    borderTopEndRadius: 10,
+    borderTopStartRadius: 10
   },
   card: {
     backgroundColor: '#fff',

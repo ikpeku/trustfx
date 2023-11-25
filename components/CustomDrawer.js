@@ -15,13 +15,13 @@ import * as MailComposer from 'expo-mail-composer';
 import * as ImagePicker from 'expo-image-picker';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
+import useStore from '../store/store';
 
 
 
 
 const CustomDrawer = (props) => {
-  const { user } = useContext(AuthContext)
-  const [verify, setVerify] = useState(false)
+  const { reset, initialData } = useStore((state) => state)
 
 
 
@@ -48,25 +48,7 @@ const CustomDrawer = (props) => {
 
 
 
-  // useEffect(() => {
 
-
-  //   const refDoc = doc(db, "users", auth.currentUser.uid)
-
-  //     const unsub = onSnapshot(refDoc, (snapshot) => {
-  //       if(snapshot.exists()){
-  //         const {verifyUser} = snapshot.data()
-  //         setVerify(verifyUser)
-
-
-  //       }
-  //     })
-
-  //     return () => unsub()
-  // }, [])
-
-
-  // handle profile avatar
 
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -114,14 +96,15 @@ const CustomDrawer = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: "#3376bc" }}>
+      <DrawerContentScrollView {...props} contentContainerStyle={{ backgroundColor: "#350460" }}>
         <ImageBackground
-          source={require('../assets/bgDrawer.jpg')}
+          source={require('../assets/trustfxlogo.jpg')}
           style={{ padding: 20 }}
         >
           <View style={{ marginBottom: 25, height: 60, flex: 1, }}>
             <Image
-              source={auth.currentUser?.photoURL === null ? require('../assets/account_circle.png') : { uri: auth.currentUser?.photoURL }}
+              // source={auth.currentUser?.photoURL === null ? require('../assets/account_circle.png') : { uri: auth.currentUser?.photoURL }}
+              source={require('../assets/account_circle.png')}
               style={{ marginLeft: 15, borderRadius: 40, height: 60, width: 60, tintColor: "#fff" }} />
 
 
@@ -133,7 +116,7 @@ const CustomDrawer = (props) => {
 
 
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 20, fontFamily: 'Nunito-Medium' }}>{user?.displayName}</Text>
+            <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 20, fontFamily: 'Nunito-Medium' }}>{initialData?.userName}</Text>
 
             <MaterialIcons name="verified-user" size={15} color="#fff" style={{ marginLeft: 7 }} />
 
@@ -148,21 +131,21 @@ const CustomDrawer = (props) => {
       <View style={{ borderTopColor: "ccc", borderTopWidth: 1, padding: 20 }}>
 
         <TouchableOpacity activeOpacity={0.6} style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }} onPress={() => MailComposer.composeAsync({
-          recipients: ["contact@coinbasepro.tradegurultd.com"]
+          recipients: ["contact@trustFx.com"]
 
         })}>
-          <Ionicons name="mail" size={24} color="#3376bc" />
-          <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 15, fontFamily: 'Nunito-Medium', color: "#3376bc" }}>Contact Us</Text>
+          <Ionicons name="mail" size={24} color="#350460" />
+          <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 15, fontFamily: 'Nunito-Medium', color: "#350460" }}>Contact Us</Text>
         </TouchableOpacity>
 
         <TouchableOpacity activeOpacity={0.6} style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }} onPress={() => onShare()}>
-          <AntDesign name="sharealt" size={24} color="#3376bc" />
-          <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 15, fontFamily: 'Nunito-Medium', color: "#3376bc" }}>Tell a friend</Text>
+          <AntDesign name="sharealt" size={24} color="#350460" />
+          <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 15, fontFamily: 'Nunito-Medium', color: "#350460" }}>Tell a friend</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.6} style={{ flexDirection: "row", alignItems: "center" }} onPress={() => SignnedOut()}>
-          <Ionicons name="exit-outline" size={24} color="#3376bc" />
-          <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 15, fontFamily: 'Nunito-Medium', color: "#3376bc" }}>Logout</Text>
+        <TouchableOpacity activeOpacity={0.6} style={{ flexDirection: "row", alignItems: "center" }} onPress={() => reset()}>
+          <Ionicons name="exit-outline" size={24} color="#350460" />
+          <Text style={{ marginLeft: 5, fontWeight: "bold", fontSize: 15, fontFamily: 'Nunito-Medium', color: "#350460" }}>Logout</Text>
         </TouchableOpacity>
 
       </View>

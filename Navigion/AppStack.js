@@ -7,9 +7,13 @@ import {
   Admin,
   Chat,
   ChatList,
+  DepositScreen,
   ProfileScreen,
   SettingScreen,
+  SwapToken,
+  TransactionDetail,
   User,
+  WalletDetail
   // Home as HomeScreen,
   // CryptoList,
 } from '../sreens'
@@ -23,6 +27,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 // import { Text, View } from 'react-native'
 // const StackAdminScreens = createNativeStackNavigator()
 // const StackChat = createNativeStackNavigator()
+const StackBase = createNativeStackNavigator()
+
+
 
 // const StackAdminComponent = () => {
 //   return (
@@ -45,63 +52,86 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 // }
 
 
-// const StackChatComponent = () => {
-//   return (
-//     <StackChat.Navigator>
-//       <StackChat.Screen
-//         name="chatList"
-//         component={ChatList}
-//         options={{ title: "Chats", headerTitleAlign: "center" }}
-//       />
-//       <StackChat.Screen
-//         name="chat"
-//         component={Chat}
-//         options={{ headerTitleAlign: "center" }}
+const StackBaseComponent = () => {
+  return (
+    <StackBase.Navigator screenOptions={{ headerShown: false }}>
+      <StackBase.Screen
+        name="base"
+        component={TapNavigtion}
 
-//       />
+      />
+      <StackBase.Screen
+        name="Subsquire"
+        component={DepositScreen}
+        options={({ route }) => ({
+          headerShown: true,
+          title: `${route.params?.title}`,
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "#350460",
+            fontFamily: 'Nunito-Bold',
+            fontWeight: "bold"
+          },
+        })}
+      />
 
-//     </StackChat.Navigator>
-//   )
-// }
+      <StackBase.Screen
+        name="Walletdetail"
+        component={WalletDetail}
+        options={({ route }) => ({
+          headerShown: true,
+          title: `${route.params?.title}`,
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "#350460",
+            fontFamily: 'Nunito-Bold',
+            fontWeight: "bold"
+          },
+        })}
+      />
+
+      <StackBase.Screen
+        name="SWAP"
+        component={SwapToken}
+        options={({ route }) => ({
+          headerShown: true,
+          title: `Swap ${route.params?.title}`,
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "#350460",
+            fontFamily: 'Nunito-Bold',
+            fontWeight: "bold"
+          },
+        })}
+      />
+
+      <StackBase.Screen
+        name="TransactionDetail"
+        component={TransactionDetail}
+        options={({ route }) => ({
+          headerShown: true,
+          title: `${route.params?.title}`,
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontSize: 30,
+            color: "#350460",
+            fontFamily: 'Nunito-Bold',
+            fontWeight: "bold"
+          },
+        })}
+      />
+
+    </StackBase.Navigator>
+  )
+}
 
 
 
 const Drawer = createDrawerNavigator()
 const AppStack = () => {
-  // const [userData, setData] = useState(null)
-  // const user = auth?.currentUser
-
-  // useEffect(() => {
-  //   const docref = doc(db,
-  //     "chatUser",
-  //     "21vftV7EKUOu5kCAP11WyygDUFG2",
-  //     "chatUsers",
-  //     user.uid)
-  //   const query = async () => {
-  //     const ref = await getDoc(docref)
-  //     // console.log("isDoc", ref.exists())
-  //     if (ref.exists()) {
-  //       setData(ref.data())
-  //     }
-
-  //   }
-  //   query()
-  // }, [userData])
-
-
-
-  // const IconBadge = ({ color }) => {
-  //   return (
-  //     <View style={{ position: "relative" }}>
-  //       <Entypo name="chat" size={24} color={color} />
-  //       {userData?.isNewUserMessage > 0 && <View style={{ position: "absolute", right: 0, top: -6, backgroundColor: "orange", borderRadius: 10, padding: 1 }}>
-  //         <Text style={{ color: "#fff" }}>{userData?.isNewUserMessage}</Text>
-  //       </View>}
-  //     </View>
-  //   )
-  // }
-
-
 
   return (
     <Drawer.Navigator
@@ -114,14 +144,14 @@ const AppStack = () => {
           fontFamily: 'Nunito-Medium',
           fontSize: 18,
         },
-        drawerActiveBackgroundColor: "#3376bc",
+        drawerActiveBackgroundColor: "#350460",
         drawerActiveTintColor: "#fff",
-        drawerInactiveTintColor: "#3376bc"
+        drawerInactiveTintColor: "#350460"
       }}
     >
       <Drawer.Screen
         name="Home1"
-        component={TapNavigtion}
+        component={StackBaseComponent}
         options={{
           drawerLabel: "Home",
           drawerIcon: ({ color }) => (
@@ -139,48 +169,6 @@ const AppStack = () => {
           ),
         }}
       />
-
-      {/* {auth?.currentUser?.email === "yesiamadmin@coinbase.com" && <Drawer.Screen
-        name="Admin"
-        component={StackAdminComponent}
-
-        options={{
-          headerShown: false,
-          drawerIcon: ({ color }) => (
-            <AntDesign name="star" size={24} color={color} />
-          ),
-
-        }}
-      />} */}
-
-      {/* {auth?.currentUser?.email === "yesiamadmin@coinbase.com" && <Drawer.Screen
-        name="AdminChat"
-        component={StackChatComponent}
-
-        options={{
-          headerShown: false,
-          title: "Chat List",
-          drawerIcon: ({ color }) => (
-            <Entypo name="chat" size={24} color={color} />
-          ),
-
-        }}
-      />} */}
-
-      {/* {auth?.currentUser?.email !== "yesiamadmin@coinbase.com" && <Drawer.Screen
-        name="Chat"
-        component={Chat}
-
-        options={{
-          headerShown: true,
-          headerTitleAlign: "center",
-          title: "Chat",
-          drawerIcon: ({ color }) => (
-            <IconBadge color={color} />
-          ),
-
-        }}
-      />} */}
 
 
     </Drawer.Navigator>

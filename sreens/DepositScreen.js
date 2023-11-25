@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, View, Text, SafeAreaView, TouchableOpacity, Share, TextInput, Button, Pressable, Image } from 'react-native'
+import { Alert, View, Text, SafeAreaView, TouchableOpacity, Share, Button, Pressable, Image } from 'react-native'
 import { FontAwesome5, Ionicons, AntDesign } from '@expo/vector-icons'
 import * as Clipboard from 'expo-clipboard'
 import QRCode from 'react-native-qrcode-svg';
 import { ScrollView } from 'react-native-gesture-handler';
-import { uuidv4 } from '@firebase/util';
-import { doc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase/firebaseConfig';
+// import { uuidv4 } from '@firebase/util';
+// import { doc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
+// import { auth, db } from '../firebase/firebaseConfig';
 
-import { RadioButton } from 'react-native-paper';
+import { ActivityIndicator, Card, RadioButton, TextInput } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import { setSubscription } from '../constant/Request';
+
+
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { db } from '../firebase/firebaseConfig';
+import { uriToBlob } from '../components/uriToBlob';
+import useStore from '../store/store';
 
 
 
 
-const DepositScreen = ({ route }) => {
+
+const DepositScreen = ({ navigation, route }) => {
+  db
+
+  const { planId } = route.params
+
+
   const [copiedText, setCopiedText] = React.useState('');
-  const [copiedToken, setCopiedToken] = React.useState('');
-  const [amount, setAmount] = React.useState('');
-  const [token, setToken] = React.useState('');
-  const [vericationStatue, setVericationStatus] = React.useState("")
-  const [tokenStatue, setTokenStatus] = React.useState(false)
-  const [transaction, setTransction] = React.useState([])
+  const { initialData } = useStore((state) => state)
+
 
   const [address, setAddress] = useState("BTC")
   const [showToken, setShowToken] = useState(false)
@@ -29,7 +38,11 @@ const DepositScreen = ({ route }) => {
 
   // image picker
   const [passport, setPassport] = useState(null);
-  const [passporteUrl, setPassporteUrl] = useState("")
+  const [textProof, setProof] = useState("")
+  const [disabledBtn, setDisabledBtn] = useState(true)
+
+  const [isLoading, setIsLoading] = useState(false)
+
 
   const WalletData = [
     {
@@ -75,18 +88,18 @@ const DepositScreen = ({ route }) => {
     }, 3000);
   };
 
-  const copyToTokenClipboard = async () => {
-    await Clipboard.setStringAsync(account)
-    fetchCopiedToken()
-  }
+  // const copyToTokenClipboard = async () => {
+  //   await Clipboard.setStringAsync(account)
+  //   fetchCopiedToken()
+  // }
 
-  const fetchCopiedToken = async () => {
-    await Clipboard.getStringAsync();
-    setCopiedToken("Token copied.");
-    setTimeout(() => {
-      setCopiedToken("");
-    }, 3000);
-  };
+  // const fetchCopiedToken = async () => {
+  //   await Clipboard.getStringAsync();
+  //   setCopiedToken("Token copied.");
+  //   setTimeout(() => {
+  //     setCopiedToken("");
+  //   }, 3000);
+  // };
 
 
   const onShare = async () => {
@@ -108,47 +121,47 @@ const DepositScreen = ({ route }) => {
     }
   }
 
-  const generteToken = () => {
-    if (amount.slice() === "") {
-      setTokenStatus(true)
+  // const generteToken = () => {
+  //   if (amount.slice() === "") {
+  //     setTokenStatus(true)
 
-      return
-    }
-    setTokenStatus(false)
+  //     return
+  //   }
+  //   setTokenStatus(false)
 
-    setToken(uuidv4())
-  }
+  //   setToken(uuidv4())
+  // }
 
-  const verfyDeposit = async () => {
-    if (amount.slice() === "") {
-      // console.log("enter a valid amount");
-      setVericationStatus("Enter a valid amount")
-      return
-    }
+  // const verfyDeposit = async () => {
+  //   if (amount.slice() === "") {
+  //     // console.log("enter a valid amount");
+  //     setVericationStatus("Enter a valid amount")
+  //     return
+  //   }
 
-    if (amount.slice() !== "") {
+  //   if (amount.slice() !== "") {
 
-      Alert.alert("Deposit status", "Deposit verification processing", [
-        {
-          text: "cancel",
-          onPress: () => {
-            setToken("")
-            setAmount("")
-          },
-        },
-        {
-          text: "ok",
-          onPress: () => {
-            setToken("")
-            setAmount("")
-          },
-        }
-      ])
+  //     Alert.alert("Deposit status", "Deposit verification processing", [
+  //       {
+  //         text: "cancel",
+  //         onPress: () => {
+  //           setToken("")
+  //           setAmount("")
+  //         },
+  //       },
+  //       {
+  //         text: "ok",
+  //         onPress: () => {
+  //           setToken("")
+  //           setAmount("")
+  //         },
+  //       }
+  //     ])
 
-    }
+  //   }
 
 
-  }
+  // }
 
 
   const pickPassport = async () => {
@@ -156,21 +169,55 @@ const DepositScreen = ({ route }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      // aspect: [4, 3],
       quality: 1,
       canceled: true
     });
 
 
     if (!result.canceled) {
+      // const res = await uriToBlob(result.assets[0].uri)
       setPassport(result.assets[0].uri);
     }
   };
 
-  const handleImagesSubmit = () => {
+
+
+  const handleImagesSubmit = async () => {
+    setIsLoading(v => !v)
+
+    try {
+
+      let avatarUrl = ""
+      if (passport) {
+
+        const blobFile = await uriToBlob(passport)
+
+        const avatar = `${initialData.firstName}${initialData.lastname}`
+        const reference = ref(getStorage(), avatar)
+        await uploadBytesResumable(reference, blobFile)
+        const downloadURL = await getDownloadURL(reference);
+        //  console.log(downloadURL)
+        //  form.append("avatar", downloadURL)
+        avatarUrl = downloadURL
+
+        // console.log(downloadURL)
+
+      }
+
+      // console.log({ userId: initialData._id, planId, proofImage: avatarUrl, textProof })
+
+      await setSubscription({ userId: initialData._id, planId, proofImage: avatarUrl, textProof })
+      navigation.goBack()
+
+    } catch (error) {
+      Alert.alert("error", error.response.data.message)
+
+    }
+
+    setIsLoading(v => !v)
 
   }
-
 
 
   useEffect(() => {
@@ -179,18 +226,37 @@ const DepositScreen = ({ route }) => {
   }, [])
 
 
+  useEffect(() => {
+
+    if (passport) {
+      setDisabledBtn(false)
+    } else if (textProof) {
+      setDisabledBtn(false)
+    } else {
+      setDisabledBtn(true)
+    }
+
+  }, [passport, textProof])
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
+      {isLoading && <View style={{ position: "absolute", width: "100%", height: "100%", flex: 1, justifyContent: "center", alignItems: "center", zIndex: 100 }}>
+        <ActivityIndicator animating={true} size={100} color={"#000080"} />
+      </View>}
+
       <ScrollView>
         <View style={{ padding: 20, flex: 1 }}>
 
 
           <View style={{ position: "relative" }}>
-            <Pressable onPress={() => setShowToken(V => !V)} style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <Text style={{ fontSize: 20 }}>Choose a token <Text>({address})</Text></Text>
-              <AntDesign name={showToken ? "caretup" : "caretdown"} size={24} color="black" />
-            </Pressable>
+            <Card style={{ padding: 10 }}>
+              <Pressable onPress={() => setShowToken(V => !V)} style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                <Text style={{ fontSize: 20 }}>Choose a token <Text>({address})</Text></Text>
+                <AntDesign name={showToken ? "caretup" : "caretdown"} size={24} color="black" />
+              </Pressable>
+            </Card>
 
             {showToken && <View style={{ width: "70%", backgroundColor: "#fff", marginLeft: "auto", position: "absolute", zIndex: 50, top: 25, right: 10 }}>
               <RadioButton.Group onValueChange={value => {
@@ -307,7 +373,7 @@ const DepositScreen = ({ route }) => {
             fontSize: 15,
             fontWeight: 'bold',
           }}>
-            Upload transaction proof
+            Upload transaction proof(photo)
           </Text>
 
 
@@ -326,7 +392,24 @@ const DepositScreen = ({ route }) => {
           {passport && <Image source={{ uri: passport }} style={{ height: 200, margin: 5 }} />}
 
 
-          <TouchableOpacity disabled={!passport} onPress={handleImagesSubmit} style={{ backgroundColor: "#1a2036", padding: 15, marginVertical: 20 }}>
+          <Text style={{ fontWeight: "bold", textAlign: "center", paddingVertical: 10, color: "#fff" }}>Or</Text>
+
+          <Text style={{
+            color: '#fff',
+            fontFamily: 'Nunito-Regular',
+            textAlign: 'center',
+            fontSize: 15,
+            fontWeight: 'bold',
+          }}>
+            Upload transaction proof(text)
+          </Text>
+
+          <TextInput placeholder='upload payment proof' mode='outlined' onChangeText={(e) => setProof(e)} multiline numberOfLines={6} style={{ padding: 5 }}>
+
+          </TextInput>
+
+
+          <TouchableOpacity disabled={disabledBtn} onPress={handleImagesSubmit} style={{ backgroundColor: disabledBtn ? "gainsboro" : "#1a2036", padding: 15, marginVertical: 20 }}>
             <Text style={{ fontSize: 20, fontFamily: "Nunito-Medium", color: "#fff", textAlign: "center" }}>Submit documents</Text>
           </TouchableOpacity>
 

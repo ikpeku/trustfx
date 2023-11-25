@@ -3,9 +3,17 @@ import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
+import firstTimer from '../store/firstTimer';
 
 
 const Onbroading = ({ navigation }) => {
+
+  const { addFirstTimer } = firstTimer((state) => state)
+
+  const handleFirstTimer = () => {
+    addFirstTimer()
+    navigation.navigate('Login')
+  }
 
   return (
     <SafeAreaView style={styles.onbrodingContainer}>
@@ -29,7 +37,7 @@ const Onbroading = ({ navigation }) => {
           <Text style={[styles.onbroadingtitle, { fontSize: 15 }]}>All your crypto easily and fastest. A new way to  manage and trade in the market</Text>
         </View>
 
-        <TouchableOpacity activeOpacity={0.6} onPress={() => navigation.navigate('Login')} style={{
+        <TouchableOpacity activeOpacity={0.6} onPress={handleFirstTimer} style={{
           width: "90%",
           borderRadius: 50,
           paddingVertical: 10,
